@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <title>Boehringer Ingelheim - Report Adverse Events</title> 
+        <link rel="shortcut icon" type="image/jpg" href="https://www.b2bcentral.co.za/wp-content/uploads/2020/07/GM.jpg"/>
+        <!-- This styling is for the canvas demonstration purposes. It is recommended 
+    that style is moved to separate file for organization in larger projects -->
+        <style>
+            html, body {
+                height: 100%;
+                background-color: #063970;
+            }
+            body {
+                margin: 0;
+            }
+            h1 {
+                font-size: 2em;
+                font-family: Concorde Nova Regular;
+                line-height: 20px;
+                color: white;
+                display: table-cell;
+                padding: 13px 0px 0px 20px;
+                font-weight: lighter;
+                margin-block-start: 0.67em;
+                margin-block-end: 0.67em;
+                margin-inline-start: 0px;
+                margin-inline-end: 0px;
+                background-color: #063970;
+            }
+            .heading {
+                background-color: #063970;
+                height: 50px;
+                text-align: -webkit-center;
+            }
+            #chatbutton {
+                left: calc(100% - 80px);
+                top: calc(100% - 52px);
+                width: 50px;
+                height: 50px;
+                background-color: #eee;
+                border-radius: 50%;
+                margin-top: 100%;
+                vertical-align: bottom;
+                position: sticky;
+                float: left;
+                font-weight: bolder;
+                border: transparent;
+            }
+            .main {
+                margin: 18px;
+                border-radius: 4px;
+            }
+
+            div[role="form"]{
+                background-color: #063970;
+            }        
+            #webchat {
+                position: fixed;
+                height: calc(98% - 50px);
+                top: 50px;
+                overflow: hidden;
+                position: absolute;
+                align-content: center;
+                align-self: center;
+                width: 33%;
+                margin-left: 33%;
+                background-color: #063970;
+                background: transparent;
+            }
+            #buttonContainer{
+                vertical-align: bottom;
+                position: fixed;
+                height: calc(98% - 50px);
+                top: 50px;
+                overflow: hidden;
+                align-content: center;
+                align-self: center;
+                margin-left: 68%;
+                background: transparent;
+            }
+            .webchat__basic-transcript__filler, .webchat__suggested-actions{
+                background-color: #063970;
+                font-size: small;
+            }
+            .webchat__basic-transcript__transcript, .webchat__suggested-actions__carousel{
+                background-color: #063970;
+                font-size: small;
+                font-weight: bolder;
+            }
+            ::-webkit-scrollbar {
+                width: 0;  /* Remove scrollbar space */
+                background: transparent;  /* Optional: just make scrollbar invisible */
+            }
+            .webchat__suggested-actions__flow-box , .webchat__send-box__text-box{
+                background-color: #90CAF9;
+                border-radius: 10px;
+                font-size: small;
+            }
+            .webchat__send-box__main{
+                border-radius: 10px;
+                font-size: small;
+            }
+            .webchat__suggested-actions{
+                padding-bottom: 5px;
+                font-size: small;
+            }
+            .webchat--css-ufqil-1egyv3b{
+                background-color: transparent;
+            }
+            
+           
+          </style>
+    </head>
+    <body>
+        <div style="align-content: center;">
+            <div class="heading">
+
+                <!-- Change the h1 text to change the bot name -->    
+                <h1>Boehringer Ingelheim - Report Adverse Events</h1>
+
+            </div>
+            <div id="webchat" role="main"></div>
+            <div id="buttonContainer">
+                <button id="chatbutton" onclick="startOver()">Start Over</button>
+            </div>
+        </div> 
+        
+            
+        
+        
+            
+         
+      <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+      <script>
+            function startOver(){
+                    window.location.reload();
+                }
+            const styleOptions = {
+               // Add styleOptions to customize web chat canvas
+               hideUploadButton: true,
+               suggestedActionLayout: 'flow', // either "carousel" or "stacked" or "flow",
+               botAvatarInitials: 'MI',
+               accent: '#00809d',
+               bubbleBackground: '#90CAF9',
+               bubbleFromUserBackground: '#90CAF9',
+               botAvatarBackgroundColor: "#0063B1",
+               botAvatarImage: 'https://nicoyalife.com/wp-content/uploads/2015/10/User_Friendly_Large.png',
+               userAvatarImage: 'https://bi-heartfailure.ebm.filament.ai/_img/icon-with.svg',
+               bubbleBorderRadius: 10,
+               bubbleFromUserBorderRadius: 10,
+               suggestedActionBorderRadius: 10,
+            };
+
+            // Add your BOT ID below
+            var BOT_ID = "f591c541-aeb2-451a-b10e-a2da601b5522"; 
+
+            var theURL = "https://powerva.microsoft.com/api/botmanagement/v1/directline/directlinetoken?botId=" + BOT_ID;
+
+            const store = window.WebChat.createStore(
+               {},
+               ({ dispatch }) => next => action => {
+                   if (action.type === "DIRECT_LINE/CONNECT_FULFILLED") {
+                      dispatch({
+                          meta: {
+                               method: "keyboard",
+                           },
+                           payload: {
+                               activity: {
+                                     channelData: {
+                                          postBack: true,
+                                     },
+                                      //Web Chat will show the 'Greeting' System Topic message which has a trigger-phrase 'hello'
+                                      name: 'startConversation',
+                                      type: "event"
+                                 },
+                            },
+                            type: "DIRECT_LINE/POST_ACTIVITY",
+                       });
+                 }
+                 return next(action);
+              }
+           );
+           fetch(theURL)
+                .then(response => response.json())
+                .then(conversationInfo => {
+                    window.WebChat.renderWebChat(
+                        {
+                            directLine: window.WebChat.createDirectLine({
+                                token: conversationInfo.token,
+                            }),
+                            store: store,
+                            styleOptions: styleOptions
+                        },
+                        document.getElementById('webchat')
+                    );
+                })
+                .catch(err => console.error("An error occurred: " + err));
+        </script>
+        
+      </body>
+      
+    </html>
